@@ -1,5 +1,7 @@
 {
   "name": "FingerprintFaceAuth",
-  "integrations": {},
+  "integrations": {
+    "cordova": {}
+  },
   "type": "angular"
 }
