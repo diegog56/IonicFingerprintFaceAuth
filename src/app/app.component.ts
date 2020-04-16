@@ -1,8 +1,11 @@
 import { Component } from '@angular/core';
 
-import { Platform } from '@ionic/angular';
+import { Platform, ModalController } from '@ionic/angular';
 import { SplashScreen } from '@ionic-native/splash-screen/ngx';
 import { StatusBar } from '@ionic-native/status-bar/ngx';
+import { Router } from '@angular/router';
+import { LoginPage } from './login/login.page';
+import { parse } from 'querystring';
 
 @Component({
   selector: 'app-root',
@@ -13,7 +16,9 @@ export class AppComponent {
   constructor(
     private platform: Platform,
     private splashScreen: SplashScreen,
-    private statusBar: StatusBar
+    private statusBar: StatusBar,
+    private modalCtrl:ModalController,
+    private router:Router
   ) {
     this.initializeApp();
   }
@@ -22,6 +27,28 @@ export class AppComponent {
     this.platform.ready().then(() => {
       this.statusBar.styleDefault();
       this.splashScreen.hide();
+      this.platform.pause.subscribe(()=>{
+        if(this.router.url!='/login'){
+          if(localStorage.getItem('timeOut')!=null)clearTimeout(parseInt(localStorage.getItem('timeOut')));
+          this.lockApp();
+        }
+      });
+    });
+  }
+
+  lockApp(){
+    this.modalCtrl.getTop().then(async v =>{
+      if(!v){
+        const modal=await this.modalCtrl.create({
+          component:LoginPage,
+          backdropDismiss:false,
+          cssClass:'login-modal',
+          componentProps:{
+            isModal:true
+          }
+        });
+        modal.present();
+      }
     });
   }
 }
